@@ -50,7 +50,6 @@ router.post("/createTask", async (req, res) => {
 
 //UPDATE ELEMENTS IN A TASK
 router.patch("/updateTask/:id", async (req, res) => {
-
   try {
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id, "tasks._id": req.params.id }, //finds user and task
@@ -64,20 +63,16 @@ router.patch("/updateTask/:id", async (req, res) => {
 });
 
 router.delete("/deleteOne/:id", async (req, res) => {
-
   try {
-
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id }, //finds user and task
       { $pull: { tasks: { _id: req.params.id } } } // deletes certain task
-      )
-    
-    console.log(updatedUser)
+    );
 
-    res.json({ message: 'Task deleted' })
+    console.log(updatedUser);
 
-} catch (err){
-    res.status(500).json({ message: err.message })
-}
-
+    res.json({ message: "Task deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });

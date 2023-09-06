@@ -5,7 +5,7 @@ const findOrCreate = require("mongoose-findorcreate");
 const task = new mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   description: String,
   media: String,
@@ -16,16 +16,15 @@ const task = new mongoose.Schema({
 const user = new mongoose.Schema({
   username: String,
   password: String,
+  fullname: String,
   googleId: String,
-  tasks: [task]
+  tasks: [task],
 });
 
-user.plugin(passportLocalMongoose) //to hash and salt passwords and to save our users to out mongoDB database
-user.plugin(findOrCreate)
+user.plugin(passportLocalMongoose); //to hash and salt passwords and to save our users to our mongoDB database
+user.plugin(findOrCreate);
 
-const userSchema = mongoose.model("user", user)
-const taskSchema = mongoose.model('task', task)
+const userSchema = mongoose.model("user", user);
+const taskSchema = mongoose.model("task", task);
 
-module.exports = { User: userSchema, Task: taskSchema }
-
-
+module.exports = { User: userSchema, Task: taskSchema };
