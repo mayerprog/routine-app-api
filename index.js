@@ -14,8 +14,8 @@ app.use(
   session({
     //initialized session
     secret: "our little secret",
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
   })
 );
 app.use(passport.initialize());

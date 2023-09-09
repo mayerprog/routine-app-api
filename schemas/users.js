@@ -17,6 +17,7 @@ const user = new mongoose.Schema({
   username: String,
   password: String,
   fullname: String,
+  birthdate: String,
   googleId: String,
   tasks: [task],
 });
