@@ -2,14 +2,21 @@ const mongoose = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose");
 const findOrCreate = require("mongoose-findorcreate");
 
+const link = new mongoose.Schema({
+  name: String,
+  link: String,
+});
+
 const task = new mongoose.Schema({
   title: {
     type: String,
     required: true,
   },
   description: String,
-  media: String,
-  link: String,
+  links: [link],
+  // photo: String,
+  // media: String,
+  // document: String
   // date: Date // unnecesarry so far
 });
 

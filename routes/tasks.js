@@ -1,6 +1,5 @@
 const express = require("express");
-const { User } = require("../schemas/users");
-const { Task } = require("../schemas/users");
+const { User, Task } = require("../schemas/users");
 
 const router = express.Router();
 
@@ -28,7 +27,7 @@ router.post("/createTask", async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     media: req.body.media,
-    link: req.body.link,
+    links: req.body.links,
   });
 
   const user = await User.findOne({ _id: req.user._id });
@@ -68,8 +67,6 @@ router.delete("/deleteOne/:id", async (req, res) => {
       { _id: req.user._id }, //finds user and task
       { $pull: { tasks: { _id: req.params.id } } } // deletes certain task
     );
-
-    console.log(updatedUser);
 
     res.json({ message: "Task deleted" });
   } catch (err) {
