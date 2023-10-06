@@ -5,6 +5,7 @@ const findOrCreate = require("mongoose-findorcreate");
 const link = new mongoose.Schema({
   name: String,
   link: String,
+  id: Number,
 });
 
 const task = new mongoose.Schema({
@@ -12,8 +13,12 @@ const task = new mongoose.Schema({
     type: String,
     required: true,
   },
-  description: String,
+  description: {
+    type: String,
+    required: true,
+  },
   links: [link],
+  date: String,
   // photo: String,
   // media: String,
   // document: String
@@ -34,5 +39,6 @@ user.plugin(findOrCreate);
 
 const userSchema = mongoose.model("user", user);
 const taskSchema = mongoose.model("task", task);
+const linkSchema = mongoose.model("link", link);
 
-module.exports = { User: userSchema, Task: taskSchema };
+module.exports = { User: userSchema, Task: taskSchema, Link: linkSchema };

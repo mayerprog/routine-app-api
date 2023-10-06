@@ -8,7 +8,9 @@ module.exports = router;
 // GET ALL TASKS
 router.get("/getAll", async (req, res) => {
   try {
-    const tasks = req.user.tasks;
+    const user = await User.findOne({ _id: req.user._id });
+
+    const tasks = user.tasks;
     res.status(200).json(tasks);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -37,11 +39,11 @@ router.post("/createTask", async (req, res) => {
 
     user.tasks.push(newTask);
 
-    const updatedUser = await user.save();
+    await user.save();
 
     await Task.deleteMany({});
 
-    res.status(201).json(updatedUser);
+    res.status(201).json(newTask);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -69,6 +71,20 @@ router.delete("/deleteOne/:id", async (req, res) => {
     );
 
     res.json({ message: "Task deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete("/deleteAll", async (req, res) => {
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      { $unset: { tasks: 1 } }, // Use the $unset operator
+      { new: true }
+    );
+
+    res.json({ message: "Tasks deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
