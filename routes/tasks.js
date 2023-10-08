@@ -30,6 +30,7 @@ router.post("/createTask", async (req, res) => {
     description: req.body.description,
     media: req.body.media,
     links: req.body.links,
+    date: req.body.date,
   });
 
   const user = await User.findOne({ _id: req.user._id });
