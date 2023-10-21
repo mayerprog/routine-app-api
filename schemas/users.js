@@ -13,15 +13,9 @@ const task = new mongoose.Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
+  description: String,
   links: [link],
-  date: {
-    type: String,
-    required: true,
-  },
+  date: String,
   // photo: String,
   // media: String,
   // document: String
