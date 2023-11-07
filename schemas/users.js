@@ -16,8 +16,7 @@ const task = new mongoose.Schema({
   description: String,
   links: [link],
   date: String,
-  // photo: String,
-  // media: String,
+  image: String,
   // document: String
   // date: Date // unnecesarry so far
 });
