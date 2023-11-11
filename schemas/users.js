@@ -24,7 +24,6 @@ const task = new mongoose.Schema({
   images: [image],
   date: String,
   // document: String
-  // date: Date // unnecesarry so far
 });
 
 const user = new mongoose.Schema({
