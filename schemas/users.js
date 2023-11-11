@@ -10,7 +10,10 @@ const link = new mongoose.Schema({
 
 const image = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  data: { type: Buffer, required: true },
+  data: {
+    type: Buffer,
+    required: true,
+  },
   contentType: { type: String, required: true },
 });
 

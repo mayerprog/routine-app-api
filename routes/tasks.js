@@ -6,6 +6,20 @@ const router = express.Router();
 
 module.exports = router;
 
+// GET IMAGE
+
+// router.get("/images/:name", async (req, res) => {
+//   const { imagename } = req.params;
+//   const image = await Image.findOne({ name });
+//   if (!image) {
+//     return res
+//       .status(404)
+//       .json({ success: false, message: "Image not found." });
+//   }
+//   res.set("Content-Type", image.contentType);
+//   res.send(image.data);
+// });
+
 // UPLOAD IMAGE
 router.post(
   "/uploadImage",
@@ -18,7 +32,7 @@ router.post(
         .json({ success: false, message: "No file provided." });
     }
     const image = new Image({
-      name: req.file.originalname,
+      name: req.file.filename,
       data: req.file.path,
       contentType: req.file.mimetype,
     });
@@ -31,7 +45,7 @@ router.post(
     return res.status(201).json({
       success: true,
       message: "Image created successfully.",
-      imageName: image.name,
+      image: image,
     });
   }
   // res.status(200).json({
@@ -39,25 +53,6 @@ router.post(
   //   file: req.file,
   // })
 );
-
-// GET ALL TASKS
-router.get("/getAll", async (req, res) => {
-  try {
-    const user = await User.findOne({ _id: req.user._id });
-
-    const tasks = user.tasks;
-
-    res.status(200).json(tasks);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// GET ONE TASK
-router.get("/getOne/:id", (req, res) => {
-  const foundTask = req.user.tasks.find((t) => t._id === req.params.id);
-  res.status(200).json(foundTask);
-});
 
 // CREATE TASK
 router.post("/createTask", async (req, res) => {
@@ -84,6 +79,24 @@ router.post("/createTask", async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
+});
+// GET ALL TASKS
+router.get("/getAll", async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id });
+
+    const tasks = user.tasks;
+
+    res.status(200).json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET ONE TASK
+router.get("/getOne/:id", (req, res) => {
+  const foundTask = req.user.tasks.find((t) => t._id === req.params.id);
+  res.status(200).json(foundTask);
 });
 
 //UPDATE ELEMENTS IN A TASK
