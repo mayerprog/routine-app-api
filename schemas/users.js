@@ -8,6 +8,12 @@ const link = new mongoose.Schema({
   id: Number,
 });
 
+const image = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  data: { type: Buffer, required: true },
+  contentType: { type: String, required: true },
+});
+
 const task = new mongoose.Schema({
   title: {
     type: String,
@@ -15,8 +21,8 @@ const task = new mongoose.Schema({
   },
   description: String,
   links: [link],
+  images: [image],
   date: String,
-  image: String,
   // document: String
   // date: Date // unnecesarry so far
 });
@@ -36,5 +42,11 @@ user.plugin(findOrCreate);
 const userSchema = mongoose.model("user", user);
 const taskSchema = mongoose.model("task", task);
 const linkSchema = mongoose.model("link", link);
+const imageSchema = mongoose.model("image", image);
 
-module.exports = { User: userSchema, Task: taskSchema, Link: linkSchema };
+module.exports = {
+  User: userSchema,
+  Task: taskSchema,
+  Link: linkSchema,
+  Image: imageSchema,
+};

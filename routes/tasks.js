@@ -1,9 +1,44 @@
 const express = require("express");
-const { User, Task } = require("../schemas/users");
+const { User, Task, Image } = require("../schemas/users");
+const { upload } = require("../index");
 
 const router = express.Router();
 
 module.exports = router;
+
+// UPLOAD IMAGE
+router.post(
+  "/uploadImage",
+  upload.single("image"),
+  async (req, res) => {
+    console.log("file", req.file);
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No file provided." });
+    }
+    const image = new Image({
+      name: req.file.originalname,
+      data: req.file.path,
+      contentType: req.file.mimetype,
+    });
+    try {
+      await image.save();
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    return res.status(201).json({
+      success: true,
+      message: "Image created successfully.",
+      imageName: image.name,
+    });
+  }
+  // res.status(200).json({
+  //   message: "Image uploaded successfully!",
+  //   file: req.file,
+  // })
+);
 
 // GET ALL TASKS
 router.get("/getAll", async (req, res) => {
@@ -29,7 +64,7 @@ router.post("/createTask", async (req, res) => {
   const task = new Task({
     title: req.body.title,
     description: req.body.description,
-    media: req.body.media,
+    images: req.body.images,
     links: req.body.links,
     date: req.body.date,
   });
@@ -82,7 +117,7 @@ router.delete("/deleteAll", async (req, res) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id },
-      { $unset: { tasks: 1 } }, // Use the $unset operator
+      { $unset: { tasks: 1 } },
       { new: true }
     );
 
