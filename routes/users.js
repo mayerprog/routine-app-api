@@ -11,7 +11,7 @@ router.get("/isauth", (req, res) => {
 });
 
 router.post("/logout", async function (req, res, next) {
-  console.log("logout user", req.user);
+  // console.log("logout user", req.user);
 
   try {
     req.logOut(req.user, function (err) {

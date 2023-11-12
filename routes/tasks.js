@@ -1,6 +1,6 @@
 const express = require("express");
 const { User, Task, Image } = require("../schemas/users");
-const { upload } = require("../index");
+const { upload } = require("../middlewares/uploadMiddleware");
 
 const router = express.Router();
 
