@@ -23,30 +23,30 @@ module.exports = router;
 // UPLOAD IMAGE
 router.post(
   "/uploadImage",
-  upload.single("image"),
+  upload.array("image", 10),
   async (req, res) => {
-    console.log("file", req.file);
-    if (!req.file) {
+    console.log("files", req.files);
+    if (!req.files) {
       return res
         .status(400)
         .json({ success: false, message: "No file provided." });
     }
-    const image = new Image({
-      name: req.file.filename,
-      data: req.file.path,
-      contentType: req.file.mimetype,
-    });
-    try {
-      await image.save();
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ success: false, message: error.message });
-    }
-    return res.status(201).json({
-      success: true,
-      message: "Image created successfully.",
-      image: image,
-    });
+    // const image = new Image({
+    //   name: req.file.filename,
+    //   data: req.file.path,
+    //   contentType: req.file.mimetype,
+    // });
+    // try {
+    //   await image.save();
+    // } catch (error) {
+    //   console.log(error);
+    //   return res.status(400).json({ success: false, message: error.message });
+    // }
+    // return res.status(201).json({
+    //   success: true,
+    //   message: "Image created successfully.",
+    //   image: image,
+    // });
   }
   // res.status(200).json({
   //   message: "Image uploaded successfully!",
@@ -55,18 +55,55 @@ router.post(
 );
 
 // CREATE TASK
-router.post("/createTask", async (req, res) => {
+router.post("/createTask", upload.array("image", 10), async (req, res) => {
+  console.log("files", req.files);
+  console.log("body", req.body);
+
+  const files = req.files;
+  let linksArray = [];
+  let savedImages;
+  const imageSavePromises = files.map(async (file) => {
+    const image = new Image({
+      name: file.filename,
+      data: file.path,
+      contentType: file.mimetype,
+    });
+    return image.save();
+  });
+
+  try {
+    savedImages = await Promise.all(imageSavePromises);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ success: false, message: error.message });
+  }
+
+  if (req.body.links) {
+    try {
+      linksArray = JSON.parse(req.body.links);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid links format" });
+    }
+  }
+
   const task = new Task({
     title: req.body.title,
     description: req.body.description,
-    images: req.body.images,
-    links: req.body.links,
+    images: savedImages,
+    links: linksArray,
     date: req.body.date,
   });
 
   const user = await User.findOne({ _id: req.user._id });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
   try {
+    console.log("New Task", task);
+
     const newTask = await task.save();
 
     user.tasks.push(newTask);
