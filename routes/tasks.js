@@ -6,26 +6,12 @@ const router = express.Router();
 
 module.exports = router;
 
-// GET IMAGE
-
-// router.get("/images/:name", async (req, res) => {
-//   const { imagename } = req.params;
-//   const image = await Image.findOne({ name });
-//   if (!image) {
-//     return res
-//       .status(404)
-//       .json({ success: false, message: "Image not found." });
-//   }
-//   res.set("Content-Type", image.contentType);
-//   res.send(image.data);
-// });
-
 // UPLOAD IMAGE
 router.post(
   "/uploadImage",
   upload.array("image", 10),
   async (req, res) => {
-    console.log("files", req.files);
+    console.log("Files", req.files);
     if (!req.files) {
       return res
         .status(400)
@@ -141,7 +127,7 @@ router.put("/updateTask/:id", async (req, res) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id, "tasks._id": req.params.id }, //finds user and task
-      { $set: { "tasks.$": req.body } }, // updates certain task
+      { $set: { "tasks.$": req.body } }, // put updated task
       { new: true }
     );
     res.json(updatedUser);
