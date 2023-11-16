@@ -9,7 +9,7 @@ const link = new mongoose.Schema({
 });
 
 const image = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
+  name: String,
   data: {
     type: Buffer,
     required: true,
@@ -26,7 +26,6 @@ const task = new mongoose.Schema({
   links: [link],
   images: [image],
   date: String,
-  // document: String
 });
 
 const user = new mongoose.Schema({

@@ -32,7 +32,7 @@ module.exports = { upload };
 
 //     // Validate file types and sizes
 //     files.forEach((file) => {
-//       const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+//       const allowedTypes = ["image/jpeg", "image/png"];
 //       //   const maxSize = 7 * 1024 * 1024;
 //       if (!allowedTypes.includes(file.mimetype)) {
 //         errors.push(`Invalid file type: ${file.originalname}`);

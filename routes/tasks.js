@@ -59,6 +59,7 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
   try {
     savedImages = await Promise.all(imageSavePromises);
+    console.log("savedImages", savedImages);
   } catch (error) {
     console.log(error);
     return res.status(400).json({ success: false, message: error.message });
@@ -87,9 +88,10 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
-  try {
-    console.log("New Task", task);
+  // console.log("user", user);
+  console.log("New Task", task);
 
+  try {
     const newTask = await task.save();
 
     user.tasks.push(newTask);
@@ -125,6 +127,8 @@ router.get("/getOne/:id", (req, res) => {
 //UPDATE ELEMENTS IN A TASK
 router.put("/updateTask/:id", async (req, res) => {
   try {
+    // const images = req.body;
+    // console.log("updateTask", req.body);
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id, "tasks._id": req.params.id }, //finds user and task
       { $set: { "tasks.$": req.body } }, // put updated task
@@ -138,6 +142,11 @@ router.put("/updateTask/:id", async (req, res) => {
 
 router.delete("/deleteOne/:id", async (req, res) => {
   try {
+    const images = req.body;
+    console.log("images", req);
+    images.forEach((image) => {
+      console.log(image);
+    });
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id }, //finds user and task
       { $pull: { tasks: { _id: req.params.id } } } // deletes certain task
