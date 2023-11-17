@@ -1,6 +1,8 @@
 const express = require("express");
 const { User, Task, Image } = require("../schemas/users");
 const { upload } = require("../middlewares/uploadMiddleware");
+const fs = require("fs");
+const { uploadDir } = require("../index");
 
 const router = express.Router();
 
@@ -42,8 +44,8 @@ router.post(
 
 // CREATE TASK
 router.post("/createTask", upload.array("image", 10), async (req, res) => {
-  console.log("files", req.files);
-  console.log("body", req.body);
+  // console.log("files", req.files);
+  // console.log("body", req.body);
 
   const files = req.files;
   let linksArray = [];
@@ -59,7 +61,6 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
   try {
     savedImages = await Promise.all(imageSavePromises);
-    console.log("savedImages", savedImages);
   } catch (error) {
     console.log(error);
     return res.status(400).json({ success: false, message: error.message });
@@ -87,9 +88,8 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-
   // console.log("user", user);
-  console.log("New Task", task);
+  // console.log("New Task", task);
 
   try {
     const newTask = await task.save();
@@ -127,8 +127,8 @@ router.get("/getOne/:id", (req, res) => {
 //UPDATE ELEMENTS IN A TASK
 router.put("/updateTask/:id", async (req, res) => {
   try {
-    // const images = req.body;
-    // console.log("updateTask", req.body);
+    const updateTask = req.body;
+    console.log("updateTask", updateTask);
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id, "tasks._id": req.params.id }, //finds user and task
       { $set: { "tasks.$": req.body } }, // put updated task
@@ -142,11 +142,24 @@ router.put("/updateTask/:id", async (req, res) => {
 
 router.delete("/deleteOne/:id", async (req, res) => {
   try {
-    const images = req.body;
-    console.log("images", req);
-    images.forEach((image) => {
-      console.log(image);
+    const user = await User.findOne({ _id: req.user._id });
+
+    user.tasks.forEach((task) => {
+      if (task._id == req.params.id) {
+        task.images.forEach((image) => {
+          imageName = image.name;
+          fs.unlink(`uploads/${imageName}`, (err) => {
+            if (err) {
+              console.error("Error deleting file:", err);
+              return;
+            }
+            console.log(`${imageName} was deleted successfully`);
+          });
+        });
+      }
+      return;
     });
+
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id }, //finds user and task
       { $pull: { tasks: { _id: req.params.id } } } // deletes certain task
