@@ -35,6 +35,7 @@ const user = new mongoose.Schema({
   birthdate: String,
   googleId: String,
   tasks: [task],
+  expoPushToken: String,
 });
 
 user.plugin(passportLocalMongoose); //to hash and salt passwords and to save our users to our mongoDB database

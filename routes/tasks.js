@@ -140,6 +140,7 @@ router.put("/updateTask/:id", async (req, res) => {
   }
 });
 
+//DELETE CERTAIN TASK + ITS FILES FROM FOLDER
 router.delete("/deleteOne/:id", async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
@@ -153,7 +154,7 @@ router.delete("/deleteOne/:id", async (req, res) => {
               console.error("Error deleting file:", err);
               return;
             }
-            console.log(`${imageName} was deleted successfully`);
+            // console.log(`${imageName} was deleted successfully`);
           });
         });
       }

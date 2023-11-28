@@ -51,6 +51,21 @@ router.post("/register", (req, res) => {
   );
 });
 
+router.post("/updateToken", async (req, res) => {
+  try {
+    const updatedToken = req.body.expoPushToken;
+    console.log("updatedToken", updatedToken);
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user._id }, //finds user
+      { expoPushToken: req.body.expoPushToken },
+      { new: true }
+    );
+    res.status(200).send("Token updated successfully");
+  } catch (err) {
+    res.status(500).send("Error updating token");
+  }
+});
+
 // router.post("/login", (req, res) => {
 //   const newUser = new User({
 //     username: req.body.username,
