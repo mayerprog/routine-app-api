@@ -60,6 +60,7 @@ router.post("/updateToken", async (req, res) => {
       { expoPushToken: req.body.expoPushToken },
       { new: true }
     );
+    // console.log(updatedUser.expoPushToken);
     res.status(200).send("Token updated successfully");
   } catch (err) {
     res.status(500).send("Error updating token");
