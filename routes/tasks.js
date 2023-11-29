@@ -46,9 +46,12 @@ router.post(
 router.post("/createTask", upload.array("image", 10), async (req, res) => {
   // console.log("files", req.files);
   // console.log("body", req.body);
+  let linksArray = [];
+
+  console.log("date", req.body.date);
 
   const files = req.files;
-  let linksArray = [];
+
   let savedImages;
   const imageSavePromises = files.map(async (file) => {
     const image = new Image({
@@ -81,7 +84,7 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
     description: req.body.description,
     images: savedImages,
     links: linksArray,
-    date: req.body.date,
+    notificationDate: req.body.date,
   });
 
   const user = await User.findOne({ _id: req.user._id });

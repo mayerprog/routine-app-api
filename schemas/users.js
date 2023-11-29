@@ -25,13 +25,11 @@ const task = new mongoose.Schema({
   description: String,
   links: [link],
   images: [image],
-  date: String,
-});
-
-const notification = new mongoose.Schema({
-  type: String,
-  enum: ["daily", "weekly", "specific"],
-  specificDates: [Date],
+  notificationDate: {
+    type: String,
+    enum: ["Every day", "Every weekday", "Every weekend"],
+  },
+  // specificDate: [{ type: Date }],
 });
 
 const user = new mongoose.Schema({
@@ -42,7 +40,6 @@ const user = new mongoose.Schema({
   googleId: String,
   tasks: [task],
   expoPushToken: String,
-  notification: [notification],
 });
 
 user.plugin(passportLocalMongoose); //to hash and salt passwords and to save our users to our mongoDB database
