@@ -3,44 +3,11 @@ const { User, Task, Image } = require("../schemas/users");
 const { upload } = require("../middlewares/uploadMiddleware");
 const fs = require("fs");
 const { uploadDir } = require("../index");
+const { sendNotification } = require("../services/notificationHelpers");
 
 const router = express.Router();
 
 module.exports = router;
-
-// UPLOAD IMAGE
-router.post(
-  "/uploadImage",
-  upload.array("image", 10),
-  async (req, res) => {
-    console.log("Files", req.files);
-    if (!req.files) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No file provided." });
-    }
-    // const image = new Image({
-    //   name: req.file.filename,
-    //   data: req.file.path,
-    //   contentType: req.file.mimetype,
-    // });
-    // try {
-    //   await image.save();
-    // } catch (error) {
-    //   console.log(error);
-    //   return res.status(400).json({ success: false, message: error.message });
-    // }
-    // return res.status(201).json({
-    //   success: true,
-    //   message: "Image created successfully.",
-    //   image: image,
-    // });
-  }
-  // res.status(200).json({
-  //   message: "Image uploaded successfully!",
-  //   file: req.file,
-  // })
-);
 
 // CREATE TASK
 router.post("/createTask", upload.array("image", 10), async (req, res) => {
@@ -107,6 +74,12 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
+
+  user.tasks.forEach((task) => {
+    if (task.notificationDate === "Every day") {
+      sendNotification(user);
+    }
+  });
 });
 // GET ALL TASKS
 router.get("/getAll", async (req, res) => {
