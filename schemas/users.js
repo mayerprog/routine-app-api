@@ -25,11 +25,11 @@ const task = new mongoose.Schema({
   description: String,
   links: [link],
   images: [image],
-  notificationDate: {
-    type: String,
-    enum: ["Every day", "Every weekday", "Every weekend"],
-  },
-  // specificDate: [{ type: Date }],
+  // notificationDate: {
+  //   type: String,
+  //   enum: ["Every day", "Every weekday", "Every weekend", "Once"],
+  // },
+  specificDate: Date,
 });
 
 const user = new mongoose.Schema({

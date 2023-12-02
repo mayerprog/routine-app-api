@@ -4,6 +4,7 @@ const { upload } = require("../middlewares/uploadMiddleware");
 const fs = require("fs");
 const { uploadDir } = require("../index");
 const { sendNotification } = require("../services/notificationHelpers");
+const moment = require("moment-timezone");
 
 const router = express.Router();
 
@@ -14,9 +15,9 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   // console.log("files", req.files);
   // console.log("body", req.body);
   let linksArray = [];
-
-  console.log("date", req.body.date);
-
+  const dateObj = JSON.parse(req.body.date);
+  let dateToDB;
+  const { date: dateString, timeZone: localTimeZone } = dateObj;
   const files = req.files;
 
   let savedImages;
@@ -46,12 +47,28 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
     }
   }
 
+  if (req.body.date) {
+    try {
+      dateToDB = moment
+        .tz(dateString, "YYYY-MM-DDTHH:mm", localTimeZone)
+        .utc()
+        .toDate();
+
+      console.log("date after formatting", dateToDB);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid date format" });
+    }
+  }
+
   const task = new Task({
     title: req.body.title,
     description: req.body.description,
     images: savedImages,
     links: linksArray,
-    notificationDate: req.body.date,
+    // notificationDate: req.body.date,
+    specificDate: dateToDB,
   });
 
   const user = await User.findOne({ _id: req.user._id });
@@ -75,12 +92,13 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 
-  user.tasks.forEach((task) => {
-    if (task.notificationDate === "Every day") {
-      sendNotification(user);
-    }
-  });
+  // user.tasks.forEach((task) => {
+  //   if (task.notificationDate === "Every day") {
+  //     sendNotification(user);
+  //   }
+  // });
 });
+
 // GET ALL TASKS
 router.get("/getAll", async (req, res) => {
   try {
