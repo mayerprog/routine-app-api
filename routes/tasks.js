@@ -2,9 +2,11 @@ const express = require("express");
 const { User, Task, Image } = require("../schemas/users");
 const { upload } = require("../middlewares/uploadMiddleware");
 const fs = require("fs");
-const { uploadDir } = require("../index");
+const { taskQueue } = require("../index");
 const { sendNotification } = require("../services/notificationHelpers");
 const moment = require("moment-timezone");
+
+const { scheduleNotification } = require("../services/scheduleNotification");
 
 const router = express.Router();
 
@@ -15,26 +17,30 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   // console.log("files", req.files);
   // console.log("body", req.body);
   let linksArray = [];
-  const dateObj = JSON.parse(req.body.date);
   let dateToDB;
+  let newTaskQueue;
+
+  const dateObj = JSON.parse(req.body.date);
   const { date: dateString, timeZone: localTimeZone } = dateObj;
   const files = req.files;
 
   let savedImages;
-  const imageSavePromises = files.map(async (file) => {
-    const image = new Image({
-      name: file.filename,
-      data: file.path,
-      contentType: file.mimetype,
+  if (files) {
+    const imageSavePromises = files.map(async (file) => {
+      const image = new Image({
+        name: file.filename,
+        data: file.path,
+        contentType: file.mimetype,
+      });
+      return image.save();
     });
-    return image.save();
-  });
 
-  try {
-    savedImages = await Promise.all(imageSavePromises);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json({ success: false, message: error.message });
+    try {
+      savedImages = await Promise.all(imageSavePromises);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ success: false, message: error.message });
+    }
   }
 
   if (req.body.links) {
@@ -85,18 +91,17 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
     await user.save();
 
+    await scheduleNotification(dateToDB, user);
+
     await Task.deleteMany({});
 
     res.status(201).json(newTask);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error("Error in task creation:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-
-  // user.tasks.forEach((task) => {
-  //   if (task.notificationDate === "Every day") {
-  //     sendNotification(user);
-  //   }
-  // });
+  console.log("expoPushToken", user.expoPushToken);
+  await sendNotification(user.expoPushToken);
 });
 
 // GET ALL TASKS

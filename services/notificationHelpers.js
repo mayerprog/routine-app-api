@@ -30,23 +30,19 @@ const shouldSendNotification = (task) => {
   }
 };
 
-async function sendNotification(user) {
+async function sendNotification(expoPushToken) {
   let messages = [];
-  // Fetch user's push token
-  //   const user = await User.findById(task.userId);
 
-  if (!Expo.isExpoPushToken(user.expoPushToken)) {
-    console.error(
-      `Push token ${user.expoPushToken} is not a valid Expo push token`
-    );
+  if (!Expo.isExpoPushToken(expoPushToken)) {
+    console.error(`Push token ${expoPushToken} is not a valid Expo push token`);
     return;
   }
 
   messages.push({
-    to: user.expoPushToken,
+    to: expoPushToken,
     sound: "default",
     body: "You have a task to complete!", // Customize your message
-    // data: { task }, // Send additional data if needed
+    // data: { taskTitle }, // Send additional data if needed
   });
 
   let chunks = expo.chunkPushNotifications(messages);

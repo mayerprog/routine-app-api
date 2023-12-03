@@ -6,6 +6,8 @@ const { User } = require("./schemas/users");
 const session = require("express-session");
 const passport = require("passport");
 const path = require("path");
+const Queue = require("bull");
+const { sendNotification } = require("./services/notificationHelpers");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -41,7 +43,20 @@ const uploadDir = path.join(__dirname, "uploads");
 app.use("/uploads", express.static(uploadDir));
 //app.use(express.static("public"));
 
-module.exports = { uploadDir };
+const taskQueue = new Queue("My Queue");
+taskQueue.process(async (job) => {
+  try {
+    console.log("expoPushToken", job.data.expoPushToken);
+    await sendNotification(job.data.expoPushToken);
+  } catch (err) {
+    console.log(err);
+  }
+});
+taskQueue.on("completed", (job, result) => {
+  console.log(`Job completed with result ${result}`);
+});
+
+module.exports = { uploadDir, taskQueue };
 
 const usersRouter = require("./routes/users");
 const tasksRouter = require("./routes/tasks");
