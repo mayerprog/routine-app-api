@@ -18,7 +18,7 @@ const scheduleNotification = async (notificationTime, user, taskTitle) => {
   try {
     const myJob = await taskQueue.add(
       {
-        expoPushToken: user.expoPushToken,
+        user: user,
         taskTitle: taskTitle,
       },
       { delay: delay }

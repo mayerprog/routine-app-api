@@ -46,8 +46,7 @@ app.use("/uploads", express.static(uploadDir));
 const taskQueue = new Queue("My Queue");
 taskQueue.process(async (job) => {
   try {
-    console.log("taskTitle", job.data.taskTitle);
-    await sendNotification(job.data.expoPushToken, job.data.taskTitle);
+    await sendNotification(job.data.user, job.data.taskTitle);
   } catch (err) {
     console.log(err);
   }
