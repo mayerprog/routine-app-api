@@ -1,6 +1,10 @@
 const { taskQueue } = require("../index");
 
-const scheduleNotification = async (notificationTime, user) => {
+const scheduleNotification = async (notificationTime, user, taskTitle) => {
+  if (!taskTitle) {
+    console.error("Task title is undefined");
+    return;
+  }
   const now = new Date();
   const delay = notificationTime.getTime() - now.getTime(); // Delay in milliseconds
   console.log("delay", delay);
@@ -10,22 +14,19 @@ const scheduleNotification = async (notificationTime, user) => {
   }
 
   // console.log("taskQueue", taskQueue);
-  console.log("expoPushToken", user.expoPushToken);
+  // console.log("expoPushToken", user.expoPushToken);
   try {
     const myJob = await taskQueue.add(
       {
         expoPushToken: user.expoPushToken,
+        taskTitle: taskTitle,
       },
       { delay: delay }
     );
-    console.log("myJob", myJob);
+    // console.log("myJob", myJob);
   } catch (err) {
     console.error("Error scheduling job:", err);
   }
 };
-
-// taskQueue.process(async (job) => {
-//   await sendNotification(job.data.user, taskTitle);
-// });
 
 module.exports = { scheduleNotification };

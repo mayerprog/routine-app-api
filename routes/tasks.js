@@ -81,8 +81,6 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  // console.log("user", user);
-  // console.log("New Task", task);
 
   try {
     const newTask = await task.save();
@@ -91,7 +89,7 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
     await user.save();
 
-    await scheduleNotification(dateToDB, user);
+    await scheduleNotification(dateToDB, user, task.title);
 
     await Task.deleteMany({});
 
@@ -101,7 +99,7 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
   console.log("expoPushToken", user.expoPushToken);
-  await sendNotification(user.expoPushToken);
+  // await sendNotification(user.expoPushToken);
 });
 
 // GET ALL TASKS

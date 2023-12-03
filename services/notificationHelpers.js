@@ -30,7 +30,7 @@ const shouldSendNotification = (task) => {
   }
 };
 
-async function sendNotification(expoPushToken) {
+async function sendNotification(expoPushToken, taskTitle) {
   let messages = [];
 
   if (!Expo.isExpoPushToken(expoPushToken)) {
@@ -38,11 +38,15 @@ async function sendNotification(expoPushToken) {
     return;
   }
 
+  // const notificationData = {
+  //   taskTitle: taskTitle,
+  // };
+
   messages.push({
     to: expoPushToken,
     sound: "default",
-    body: "You have a task to complete!", // Customize your message
-    // data: { taskTitle }, // Send additional data if needed
+    body: taskTitle,
+    title: "You have a task to complete!",
   });
 
   let chunks = expo.chunkPushNotifications(messages);
