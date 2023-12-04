@@ -26,7 +26,7 @@ router.post("/logout", async function (req, res, next) {
         return next(err);
       }
     });
-    // req.user = null;
+    //req.user = null;
     console.log("user after logout", user);
   } catch (e) {
     console.log(e);

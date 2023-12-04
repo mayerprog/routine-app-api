@@ -18,7 +18,7 @@ const scheduleNotification = async (notificationTime, user, taskTitle) => {
   try {
     const myJob = await taskQueue.add(
       {
-        user: user,
+        userID: user._id,
         taskTitle: taskTitle,
       },
       { delay: delay }

@@ -89,10 +89,9 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
     await user.save();
 
-    await scheduleNotification(dateToDB, req.user, task.title);
+    await scheduleNotification(dateToDB, user, task.title);
 
     await Task.deleteMany({});
-
     res.status(201).json(newTask);
   } catch (err) {
     console.error("Error in task creation:", err);

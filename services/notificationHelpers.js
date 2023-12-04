@@ -21,9 +21,13 @@ let expo = new Expo();
 //   }
 // };
 
-async function sendNotification(user, taskTitle) {
+async function sendNotification(userID, taskTitle) {
   let messages = [];
   let receiptIds = [];
+
+  console.log("user ID", userID);
+
+  const user = await User.findOne({ _id: userID });
 
   if (!user.expoPushToken || !Expo.isExpoPushToken(user.expoPushToken)) {
     console.error(`Invalid or missing push token for user ${user._id}`);
