@@ -63,7 +63,7 @@ async function sendNotification(userID, taskTitle) {
       for (let receiptId in receipts) {
         let receipt = receipts[receiptId];
         if (receipt.status === "error") {
-          await handleReceiptError(receipt, user);
+          await handleReceiptError(receipt, userID);
         }
       }
     } catch (error) {
@@ -72,13 +72,17 @@ async function sendNotification(userID, taskTitle) {
   }
 }
 
-async function handleReceiptError(receipt, user) {
+async function handleReceiptError(receipt, userID) {
   const { message, details } = receipt;
   if (details && details.error) {
     switch (details.error) {
       case "DeviceNotRegistered":
         // Handle the unregistered device
-        await removePushToken(user);
+        await User.findOneAndUpdate(
+          { _id: userID },
+          { expoPushToken: "" },
+          { new: true }
+        );
         break;
     }
   } else {
