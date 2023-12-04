@@ -16,7 +16,7 @@ app.use(
   session({
     //initialized session
     secret: "our little secret",
-    resave: true,
+    resave: false,
     saveUninitialized: true,
   })
 );

@@ -17,7 +17,8 @@ router.post("/logout", async function (req, res, next) {
   try {
     const user = await User.findOneAndUpdate(
       { _id: req.user._id },
-      { expoPushToken: "" }
+      { expoPushToken: "" },
+      { new: true }
     );
     req.logOut(req.user, function (err) {
       if (err) {
@@ -25,13 +26,11 @@ router.post("/logout", async function (req, res, next) {
         return next(err);
       }
     });
+    // req.user = null;
     console.log("user after logout", user);
-    // const user = await User.findOne({ _id: req.user._id });
-    // await removePushToken(user);
   } catch (e) {
     console.log(e);
   }
-
   res.json(req.isAuthenticated());
   console.log("logout called");
 });

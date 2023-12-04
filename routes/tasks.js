@@ -89,7 +89,7 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
     await user.save();
 
-    await scheduleNotification(dateToDB, user, task.title);
+    await scheduleNotification(dateToDB, req.user, task.title);
 
     await Task.deleteMany({});
 
