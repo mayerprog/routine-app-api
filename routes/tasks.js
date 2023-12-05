@@ -18,14 +18,13 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   // console.log("body", req.body);
   let linksArray = [];
   let dateToDB;
-  let newTaskQueue;
 
   const dateObj = JSON.parse(req.body.date);
   const { date: dateString, timeZone: localTimeZone } = dateObj;
   const files = req.files;
 
   let savedImages;
-  if (files) {
+  if (files && files.length > 0) {
     const imageSavePromises = files.map(async (file) => {
       const image = new Image({
         name: file.filename,
@@ -41,6 +40,8 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
       console.log(error);
       return res.status(400).json({ success: false, message: error.message });
     }
+  } else {
+    savedImages = [];
   }
 
   if (req.body.links) {

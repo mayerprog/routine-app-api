@@ -7,9 +7,10 @@ const link = new mongoose.Schema({
   link: String,
   id: Number,
 });
-
 const image = new mongoose.Schema({
   name: { type: String, unique: true, sparse: true },
+  // The sparse: true option ensures that the unique index only applies
+  // to documents where the name field exists.
   data: {
     type: Buffer,
     required: true,
