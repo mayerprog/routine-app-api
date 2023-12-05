@@ -89,7 +89,7 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
     await user.save();
 
-    await scheduleNotification(dateToDB, user, task.title);
+    await scheduleNotification(dateToDB, user, task);
 
     await Task.deleteMany({});
     res.status(201).json(newTask);
@@ -140,9 +140,10 @@ router.put("/updateTask/:id", async (req, res) => {
 router.delete("/deleteOne/:id", async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
-
+    const taskId = req.params.id;
+    console.log("deletTaskId", taskId);
     user.tasks.forEach((task) => {
-      if (task._id == req.params.id) {
+      if (task._id == taskId) {
         task.images.forEach((image) => {
           imageName = image.name;
           fs.unlink(`uploads/${imageName}`, (err) => {
@@ -150,7 +151,6 @@ router.delete("/deleteOne/:id", async (req, res) => {
               console.error("Error deleting file:", err);
               return;
             }
-            // console.log(`${imageName} was deleted successfully`);
           });
         });
       }
@@ -159,8 +159,11 @@ router.delete("/deleteOne/:id", async (req, res) => {
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id }, //finds user and task
-      { $pull: { tasks: { _id: req.params.id } } } // deletes certain task
+      { $pull: { tasks: { _id: taskId } } } // deletes certain task
     );
+
+    const job = await taskQueue.getJob(taskId);
+    await job?.remove();
 
     res.json({ message: "Task deleted" });
   } catch (err) {

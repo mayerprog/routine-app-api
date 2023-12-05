@@ -1,7 +1,6 @@
 const cron = require("node-cron");
 const { Task, User } = require("../schemas/users");
 const { Expo } = require("expo-server-sdk");
-const { removePushToken } = require("./removePushToken");
 
 let expo = new Expo();
 
@@ -24,8 +23,7 @@ let expo = new Expo();
 async function sendNotification(userID, taskTitle) {
   let messages = [];
   let receiptIds = [];
-
-  console.log("user ID", userID);
+  // console.log("user ID", userID);
 
   const user = await User.findOne({ _id: userID });
 

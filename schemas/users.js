@@ -9,7 +9,7 @@ const link = new mongoose.Schema({
 });
 
 const image = new mongoose.Schema({
-  name: String,
+  name: { type: String, unique: true, sparse: true },
   data: {
     type: Buffer,
     required: true,

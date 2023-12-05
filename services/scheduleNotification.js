@@ -1,7 +1,7 @@
 const { taskQueue } = require("../index");
 
-const scheduleNotification = async (notificationTime, user, taskTitle) => {
-  if (!taskTitle) {
+const scheduleNotification = async (notificationTime, user, task) => {
+  if (!task.title) {
     console.error("Task title is undefined");
     return;
   }
@@ -16,12 +16,14 @@ const scheduleNotification = async (notificationTime, user, taskTitle) => {
   // console.log("taskQueue", taskQueue);
   // console.log("expoPushToken", user.expoPushToken);
   try {
+    console.log("taskID", task._id);
     const myJob = await taskQueue.add(
       {
         userID: user._id,
-        taskTitle: taskTitle,
+        taskTitle: task.title,
+        taskID: task._id,
       },
-      { delay: delay }
+      { delay: delay, jobId: task._id }
     );
     // console.log("myJob", myJob);
   } catch (err) {
