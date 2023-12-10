@@ -22,10 +22,12 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   const dateObj = JSON.parse(req.body.date);
   const { date: dateString, timeZone: localTimeZone } = dateObj;
   const files = req.files;
-
+  let imageNames = [];
   let savedImages;
+
   if (files && files.length > 0) {
     const imageSavePromises = files.map(async (file) => {
+      imageNames.push(file.filename);
       const image = new Image({
         name: file.filename,
         data: file.path,
@@ -72,7 +74,6 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
     description: req.body.description,
     images: savedImages,
     links: linksArray,
-    // notificationDate: req.body.date,
     specificDate: dateToDB,
   });
 
@@ -94,9 +95,18 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
 
     res.status(201).json(newTask);
   } catch (err) {
+    imageNames.forEach(async (name) => {
+      fs.unlink(`uploads/${name}`, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+          return;
+        }
+      });
+    });
     console.error("Error in task creation:", err);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
+
   console.log("expoPushToken", user.expoPushToken);
   // await sendNotification(user.expoPushToken);
 });
