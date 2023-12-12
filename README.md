@@ -26,7 +26,7 @@ Routine App API serves as the backbone of the application [Routine App](https://
 
 #### **Notification System:**
 
-- Integrates with `bull` queue for job scheduling.
+- Integrates with `bull` queue for job scheduling to send notifications.
 - Utilizes custom notification helper functions to manage the delivery of task reminders to users.
 
 ### **Server Configuration:**
@@ -45,11 +45,11 @@ Routine App API serves as the backbone of the application [Routine App](https://
 - #### **Social Media Authorization**
 - #### **Flexible Notification Settings (daily, weekly, or on chosen weekdays)**
 - #### **Document Support**
-- #### **Social Sharing (the ability to share tasks with friends on social platforms like Facebook)**
+- #### **Social Sharing (the ability to share routines with friends on social platforms like Facebook)**
 
 # Get Started
 
-- Clone the repository with `git clone https://github.com/mayerprog/routine-app-ui-bll`
+- Clone the repository with `git clone https://github.com/mayerprog/routine-app-api`
 - Install dependencies `yarn install`
 - Run `yarn start` to run the project on Expo Go app
 
