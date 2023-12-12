@@ -65,3 +65,10 @@ The Routine App API serves as the backbone of the application [Routine App](http
 - Bull
 - Multer
 - Expo Server SDK
+
+## Contacts
+
+<p>Mayra Tulegenova</p>
+
+- Telegram: [mayerprog](https://t.me/mayerprog)
+- Email: [supermayerehs@gmail.com](supermayerehs@gmail.com)
