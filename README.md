@@ -29,13 +29,13 @@ Routine App API serves as the backbone of the application [Routine App](https://
 - Integrates with `bull` queue for job scheduling.
 - Utilizes custom notification helper functions to manage the delivery of task reminders to users.
 
-### **Server Configuration**
+### **Server Configuration:**
 
 - Server built with `express.js`, running on port 3000.
 - Database connections managed with `mongoose`, connecting to a MongoDB instance.
 - Environment variables are configured and managed securely.
 
-### **Database Interaction**
+### **Database Interaction:**
 
 - MongoDB is utilized for storing user and task data, with models defined in separate schema files.
 - Database connection and error handling are set up to ensure stable operations.
@@ -43,11 +43,8 @@ Routine App API serves as the backbone of the application [Routine App](https://
 ### **Upcoming Features**
 
 - #### **Social Media Authorization**
-
 - #### **Flexible Notification Settings (daily, weekly, or on chosen weekdays)**
-
 - #### **Document Support**
-
 - #### **Social Sharing (the ability to share tasks with friends on social platforms like Facebook)**
 
 # Get Started
