@@ -2,7 +2,7 @@
 
 # Description
 
-The Routine App API serves as the backbone of the application [Routine App](https://github.com/mayerprog/routine-app-ui-bll), facilitating all backend processes that power the app's core functionalities. It is meticulously designed to manage user authentication, task operations, and notification scheduling, ensuring a seamless and intuitive user experience.
+Routine App API serves as the backbone of the application [Routine App](https://github.com/mayerprog/routine-app-ui-bll), facilitating all backend processes that power the app's core functionalities. It is meticulously designed to manage user authentication, task operations, and notification scheduling, ensuring a seamless and intuitive user experience.
 
 ### **API Features and Endpoints:**
 
