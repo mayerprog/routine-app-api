@@ -133,13 +133,25 @@ router.get("/getOne/:id", (req, res) => {
 //UPDATE ELEMENTS IN A TASK
 router.put("/updateTask/:id", async (req, res) => {
   try {
-    const updateTask = req.body;
-    console.log("updateTask", updateTask);
+    const updateTask = req.body.updatedTask;
+    const imagesName = req.body.imagesName;
+    const taskID = req.params.id;
+
+    console.log("imagesId", imagesName);
     const updatedUser = await User.findOneAndUpdate(
-      { _id: req.user._id, "tasks._id": req.params.id }, //finds user and task
-      { $set: { "tasks.$": req.body } }, // put updated task
+      { _id: req.user._id, "tasks._id": taskID }, //finds user and task
+      { $set: { "tasks.$": updateTask } }, // put updated task
       { new: true }
     );
+    imagesName.forEach((imageName) => {
+      fs.unlink(`uploads/${imageName}`, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+          return;
+        }
+      });
+    });
+
     res.json(updatedUser);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -151,7 +163,7 @@ router.delete("/deleteOne/:id", async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
     const taskID = req.params.id;
-    console.log("deletTaskId", taskID);
+    // console.log("deletTaskId", taskID);
     user.tasks.forEach((task) => {
       if (task._id == taskID) {
         task.images.forEach((image) => {
