@@ -27,12 +27,15 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   const files = req.files;
 
   let imageNames, savedImages;
-  try {
-    const result = await saveImages(files);
-    imageNames = result.imageNames;
-    savedImages = result.savedImages;
-  } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
+
+  if (files && files.length > 0) {
+    try {
+      const result = await saveImages(files);
+      imageNames = result.imageNames;
+      savedImages = result.savedImages;
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
   }
 
   if (req.body.links) {
@@ -124,19 +127,22 @@ router.get("/getOne/:id", (req, res) => {
 //UPDATE ELEMENTS IN A TASK
 router.put("/updateTask/:id", upload.array("image", 10), async (req, res) => {
   let savedImages, imageNames;
-  const imagesForDelete = req.body.imagesForDelete;
+  const imagesForDelete = JSON.parse(req.body.imagesForDelete);
   const taskID = req.params.id;
-  const updateTask = req.body.updatedTask;
+  const updateTask = JSON.parse(req.body.updatedTask);
   const files = req.files;
 
   console.log("imagesForDelete", imagesForDelete);
 
-  try {
-    const result = await saveImages(files);
-    imageNames = result.imageNames;
-    savedImages = result.savedImages;
-  } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
+  if (files && files.length > 0) {
+    try {
+      const result = await saveImages(files);
+      imageNames = result.imageNames;
+      savedImages = result.savedImages;
+      updateTask.images.push(...savedImages);
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
   }
 
   try {
@@ -145,7 +151,6 @@ router.put("/updateTask/:id", upload.array("image", 10), async (req, res) => {
       { $set: { "tasks.$": updateTask } }, // put updated task
       { new: true }
     );
-
     imagesForDelete.forEach(async (name) => {
       fs.unlink(`uploads/${name}`, (err) => {
         if (err) {
@@ -154,6 +159,8 @@ router.put("/updateTask/:id", upload.array("image", 10), async (req, res) => {
         }
       });
     });
+
+    console.log("imageNames", imageNames);
 
     res.json(updatedUser);
   } catch (err) {
@@ -165,6 +172,7 @@ router.put("/updateTask/:id", upload.array("image", 10), async (req, res) => {
         }
       });
     });
+
     console.log("Error in task update:", err);
     res.status(400).json({ message: err.message });
   }
