@@ -2,11 +2,14 @@ const express = require("express");
 const { User, Task, Image } = require("../schemas/users");
 const { upload } = require("../middlewares/uploadMiddleware");
 const fs = require("fs");
+const path = require("path");
+
 const { taskQueue } = require("../index");
 const { sendNotification } = require("../services/notificationHelpers");
 const moment = require("moment-timezone");
 
 const { scheduleNotification } = require("../services/scheduleNotification");
+const saveImages = require("../services/imageHandler");
 
 const router = express.Router();
 
@@ -22,26 +25,14 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   const dateObj = JSON.parse(req.body.date);
   const { date: dateString, timeZone: localTimeZone } = dateObj;
   const files = req.files;
-  let imageNames = [];
-  let savedImages;
 
-  if (files && files.length > 0) {
-    const imageSavePromises = files.map(async (file) => {
-      imageNames.push(file.filename);
-      const image = new Image({
-        name: file.filename,
-        data: file.path,
-        contentType: file.mimetype,
-      });
-      return image.save();
-    });
-
-    try {
-      savedImages = await Promise.all(imageSavePromises);
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ success: false, message: error.message });
-    }
+  let imageNames, savedImages;
+  try {
+    const result = await saveImages(files);
+    imageNames = result.imageNames;
+    savedImages = result.savedImages;
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
   }
 
   if (req.body.links) {
@@ -144,12 +135,26 @@ router.put("/updateTask/:id", async (req, res) => {
       { new: true }
     );
     imagesName.forEach((imageName) => {
-      fs.unlink(`uploads/${imageName}`, (err) => {
+      const filePath = path.join(__dirname, "../uploads", imageName);
+      fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
-          console.error("Error deleting file:", err);
+          console.error("File does not exist, cannot delete:", imageName);
           return;
         }
+        fs.unlink(filePath, (unlinkErr) => {
+          if (unlinkErr) {
+            console.error("Error deleting file:", unlinkErr);
+            return;
+          }
+          console.log("File deleted successfully:", imageName);
+        });
       });
+      // fs.unlink(`uploads/${imageName}`, (err) => {
+      //   if (err) {
+      //     console.error("Error deleting file:", err);
+      //     return;
+      //   }
+      // });
     });
 
     res.json(updatedUser);
