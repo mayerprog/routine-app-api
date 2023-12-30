@@ -122,43 +122,50 @@ router.get("/getOne/:id", (req, res) => {
 });
 
 //UPDATE ELEMENTS IN A TASK
-router.put("/updateTask/:id", async (req, res) => {
-  try {
-    const updateTask = req.body.updatedTask;
-    const imagesName = req.body.imagesName;
-    const taskID = req.params.id;
+router.put("/updateTask/:id", upload.array("image", 10), async (req, res) => {
+  let savedImages, imageNames;
+  const imagesForDelete = req.body.imagesForDelete;
+  const taskID = req.params.id;
+  const updateTask = req.body.updatedTask;
+  const files = req.files;
 
-    console.log("imagesId", imagesName);
+  console.log("imagesForDelete", imagesForDelete);
+
+  try {
+    const result = await saveImages(files);
+    imageNames = result.imageNames;
+    savedImages = result.savedImages;
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+
+  try {
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id, "tasks._id": taskID }, //finds user and task
       { $set: { "tasks.$": updateTask } }, // put updated task
       { new: true }
     );
-    imagesName.forEach((imageName) => {
-      const filePath = path.join(__dirname, "../uploads", imageName);
-      fs.access(filePath, fs.constants.F_OK, (err) => {
+
+    imagesForDelete.forEach(async (name) => {
+      fs.unlink(`uploads/${name}`, (err) => {
         if (err) {
-          console.error("File does not exist, cannot delete:", imageName);
+          console.error("Error deleting file:", err);
           return;
         }
-        fs.unlink(filePath, (unlinkErr) => {
-          if (unlinkErr) {
-            console.error("Error deleting file:", unlinkErr);
-            return;
-          }
-          console.log("File deleted successfully:", imageName);
-        });
       });
-      // fs.unlink(`uploads/${imageName}`, (err) => {
-      //   if (err) {
-      //     console.error("Error deleting file:", err);
-      //     return;
-      //   }
-      // });
     });
 
     res.json(updatedUser);
   } catch (err) {
+    imageNames.forEach(async (name) => {
+      fs.unlink(`uploads/${name}`, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+          return;
+        }
+      });
+    });
+    console.log("Error in task update:", err);
     res.status(400).json({ message: err.message });
   }
 });
