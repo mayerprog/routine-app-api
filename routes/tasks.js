@@ -79,7 +79,7 @@ router.post("/createTask", upload.array("image", 10), async (req, res) => {
   try {
     const newTask = await task.save();
 
-    await Task.deleteMany({});
+    // await Task.deleteMany({});
 
     user.tasks.push(newTask);
 
@@ -132,14 +132,15 @@ router.put("/updateTask/:id", upload.array("image", 10), async (req, res) => {
   const updateTask = JSON.parse(req.body.updatedTask);
   const files = req.files;
 
-  console.log("imagesForDelete", imagesForDelete);
+  console.log("files", files);
 
   if (files && files.length > 0) {
     try {
       const result = await saveImages(files);
       imageNames = result.imageNames;
       savedImages = result.savedImages;
-      updateTask.images.push(...savedImages);
+      // updateTask.images.push(...savedImages);
+      updateTask.images = updateTask.images.concat(result.savedImages);
     } catch (error) {
       return res.status(400).json({ success: false, message: error.message });
     }
@@ -184,9 +185,11 @@ router.delete("/deleteOne/:id", async (req, res) => {
     const user = await User.findOne({ _id: req.user._id });
     const taskID = req.params.id;
     // console.log("deletTaskId", taskID);
-    user.tasks.forEach((task) => {
+    user.tasks.forEach(async (task) => {
       if (task._id == taskID) {
-        task.images.forEach((image) => {
+        await Task.findByIdAndRemove(taskID);
+        task.images.forEach(async (image) => {
+          await Image.findByIdAndRemove(image._id);
           imageName = image.name;
           fs.unlink(`uploads/${imageName}`, (err) => {
             if (err) {
